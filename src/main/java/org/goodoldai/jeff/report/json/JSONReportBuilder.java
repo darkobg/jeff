@@ -16,15 +16,39 @@ import org.goodoldai.jeff.report.ReportChunkBuilderFactory;
 import org.json.simple.JSONObject;
 
 /**
- *
+ * A concrete ReportBuilder implementation. This class is used when the  
+ * output report is supposed to be JSON Object.
+ * 
  * @author darkostojkovic
  */
 public class JSONReportBuilder extends ReportBuilder {
 
+    /**
+     * Just calls the superclass constructor.
+     *
+     * @param factory chunk builder factory
+     */
     public JSONReportBuilder(ReportChunkBuilderFactory factory) {
         super(factory);
     }
 
+    /**
+     * Creates an JSON report based on the provided explanation and sends it to 
+     * an .json file as output. If the file doesn't exist, it is created. If it 
+     * exists, it is overwritten.
+     * 
+     * Basically, this method opens the output stream and
+     * it creates PrintWriter (based on the provided file path)
+     * which holds all of the explanation information before it is put into the stream,
+     * and calls the "buildReport" method that has an JSONObject an argument.
+     *
+     * @param explanation the explanation that needs to be transformed into a
+     * report
+     * @param filepath a string representing an URL for the file
+     *
+     * @throws org.goodoldai.jeff.explanation.ExplanationException if any of the arguments are null,
+     * if filepath is an empty string, or if IOException is caught
+     */
     @Override
     public void buildReport(Explanation explanation, String filepath) {
         if (explanation == null) {
@@ -36,12 +60,14 @@ public class JSONReportBuilder extends ReportBuilder {
         }
 
         PrintWriter writer = null;
-
+        JSONObject jObject = null;
         try {
             writer = new PrintWriter(new File(filepath));
-
-            buildReport(explanation, writer);
-
+            jObject = new JSONObject();
+            
+            buildReport(explanation, jObject);
+            
+            writer.write(jObject.toJSONString());
         } catch (IOException ex) {
             throw new ExplanationException(
                     "The file could not be writen due to fallowing IO error: " + ex.getMessage());
@@ -52,6 +78,17 @@ public class JSONReportBuilder extends ReportBuilder {
         }
     }
 
+    /**
+     * Creates a report based on the provided explanation and writes it to the
+     * provided object that is type of org.json.simple.JSONObject before it is written in
+     * the file 
+     *
+     * @param explanation the explanation that needs to be transformed into a
+     * report
+     * @param stream output stream to which the report is to be written
+     *
+     * @throws org.goodoldai.jeff.explanation.ExplanationException if any of the arguments are null
+     */
     @Override
     protected void insertHeader(Explanation explanation, Object stream) {
         if (explanation == null && stream == null) {

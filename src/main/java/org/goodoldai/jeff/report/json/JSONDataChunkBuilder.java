@@ -22,16 +22,41 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- *
+ * A concrete builder for transforming data explanation chunks into pieces 
+ * of JSON report
+ * 
  * @author darkostojkovic
  */
 public class JSONDataChunkBuilder implements ReportChunkBuilder{
     
-    
-    public JSONDataChunkBuilder(){
-        
+    /**
+     * Public builder initialization
+     */
+    public JSONDataChunkBuilder(){  
     }
 
+    /**
+     * This method transforms a data explanation chunk into an JSON report piece
+     * and writes this piece into the provided JSON object. The method first collects all
+     * general chunk data (context, rule, group, tags) and inserts them into 
+     * the report, and then retrieves the chunk content. Since the content can 
+     * be a SingleData, OneDimData, TwoDimData or a ThreeDimData instance,
+     * dimension details and concrete data are transformed into XML and 
+     * inserted.
+     *
+     * In all cases, if the dimension unit is missing it should be omitted from
+     * the report.
+     *
+     * @param echunk data explanation chunk that needs to be transformed
+     * @param stream output stream to which the transformed chunk will be
+     * written in as an JSON object
+     *  @param insertHeaders denotes if chunk headers should be inserted into the
+     * report (true) or not (false)
+     *
+     * @throws org.goodoldai.jeff.explanation.ExplanationException if any of the arguments are
+     * null, if the entered chunk is not a DataExplanationChunk instance or if 
+     * the entered output stream type is not org.json.simple.JSONObject
+     */
     public void buildReportChunk(ExplanationChunk echunk, Object stream, boolean insertHeaders) {
         if (echunk == null && stream == null) {
             throw new ExplanationException("All of the arguments are mandatory, so they can not be null");
@@ -58,12 +83,6 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
         JSONObject jsonDataExp = new JSONObject();
         if(insertHeaders)
             JSONChunkUtility.insertExplanationInfo(echunk, jsonDataExp);
-        
-//        Document document = (Document) stream;
-//        Element element = document.getRootElement().addElement("dataExplanation");
-//
-//        if (insertHeaders)
-//            XMLChunkUtility.insertExplanationInfo(echunk, element);
 
         DataExplanationChunk dataExplenationChunk = (DataExplanationChunk) echunk;
 
@@ -73,6 +92,17 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
     }
     
     
+     /**
+     * This is a private method that is used to insert content into the document,
+     * this method first checks to see what type of content is (SingleData, OneDimData,
+     * TwoDimData or a ThreeDimData ) and than calls the right method to insert
+     * the content into the document (an instance of org.json.simple.JSONObject)
+     *
+     * @param imageExplanationChunk image explanation chunk which holds the content
+     * that needs to be transformed
+     * @param element element in which the content of the transformed chunk will be
+     * written in as an JSON object attributes(in this case org.json.simple.JSONObject)
+     */
     private void insertContent(DataExplanationChunk dataExplenationChunk, JSONObject jObject) {
 
         if (dataExplenationChunk.getContent() instanceof SingleData) {
@@ -90,7 +120,15 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
         }
     }
     
-    
+    /**
+     * This is a private method that is used to insert content into the document.
+     * The content must be the instance of explanation.data.SingleData
+     *
+     * @param dataExplenationChunk data explanation chunk which holds the content
+     * that needs to be transformed
+     * @param element element in which the content of the transformed chunk will be
+     * written in as an JSON object attributes(in this case org.json.simple.JSONObject)
+     */
     private void inputSingleDataContent(DataExplanationChunk dataExplenationChunk, JSONObject jObject) {
         SingleData singleData = (SingleData) dataExplenationChunk.getContent();
 
@@ -109,6 +147,15 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
         jObject.put("content", contentObj);
     }
     
+    /**
+     * This is a private method that is used to insert content into the document.
+     * The content must be the instance of explanation.data.OneDimData
+     *
+     * @param dataExplenationChunk data explanation chunk which holds the content
+     * that needs to be transformed
+     * @param element element in which the content of the transformed chunk will be
+     * written in as an JSON object attributes(in this case org.json.simple.JSONObject)
+     */
     private void inputOneDimDataContent(DataExplanationChunk dataExplenationChunk, JSONObject jObject) {
         OneDimData oneDimData = (OneDimData) dataExplenationChunk.getContent();
 
@@ -140,7 +187,16 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
         jObject.put("content", contentObj);
         
     }
-
+    
+    /**
+     * This is a private method that is used to insert content into the document.
+     * The content must be the instance of explanation.data.TwoDimData
+     *
+     * @param dataExplenationChunk data explanation chunk which holds the content
+     * that needs to be transformed
+     * @param element element in which the content of the transformed chunk will be
+     * written in as an JSON object attributes(in this case org.json.simple.JSONObject)
+     */
     private void inputTwoDimDataContent(DataExplanationChunk dataExplenationChunk, JSONObject jObject) {
         TwoDimData twoDimData = (TwoDimData) dataExplenationChunk.getContent();
 
@@ -186,6 +242,15 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
         jObject.put("content", contentObj);
     }
     
+    /**
+     * This is a private method that is used to insert content into the document.
+     * The content must be the instance of explanation.data.ThreeDimData
+     *
+     * @param dataExplenationChunk data explanation chunk which holds the content
+     * that needs to be transformed
+     * @param element element in which the content of the transformed chunk will be
+     * written in as an JSON object attributes(in this case org.json.simple.JSONObject)
+     */
     private void inputThreeDimDataContent(DataExplanationChunk dataExplenationChunk, JSONObject jObject) {
         ThreeDimData threeDimData = (ThreeDimData) dataExplenationChunk.getContent();
 
@@ -205,8 +270,6 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
 
         JSONObject contentObj = new JSONObject();
         JSONObject tripleObj = new JSONObject();
-//        Element contentElement = element.addElement("content");
-//        Element subContentElement = contentElement.addElement("tripleValue");
 
         for (Iterator<Triple> it = tripleValues.iterator(); it.hasNext();) {
             Triple triple = it.next();

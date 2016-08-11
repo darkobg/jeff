@@ -13,14 +13,40 @@ import org.goodoldai.jeff.report.ReportChunkBuilder;
 import org.json.simple.JSONObject;
 
 /**
- *
+ * A concrete builder for transforming image explanation chunks into pieces 
+ * of XML report
+ * 
  * @author darkostojkovic
  */
 public class JSONImageChunkBuilder implements ReportChunkBuilder{
     
+    /**
+     * Public builder initialization
+     */
     public JSONImageChunkBuilder(){
     }
-
+    
+    /**
+     * This method transforms an image explanation chunk into an JSON report piece
+     * and writes this piece into the provided JSON object which is, in this
+     * case, an instance of org.json.simple.JSONObject. The method first collects
+     * all general chunk data (context, rule, group, tags) and inserts them 
+     * into the report, and then retrieves the chunk content. Since the content 
+     * is, in this case, an ImageData instance, and since images cannot be 
+     * displayed in JSON objects, as attributes, only the image data (caption and URL) gets 
+     * inserted into the report. If the image caption is missing, it doesn't 
+     * get inserted into the report.
+     *
+     * @param echunk image explanation chunk that needs to be transformed
+     * @param stream output stream to which the transformed chunk will be
+     * written in as an JSON object attributes(in this case org.json.simple.JSONObject)
+     * @param insertHeaders denotes if chunk headers should be inserted into the
+     * report (true) or not (false)
+     *
+     * @throws org.goodoldai.jeff.explanation.ExplanationException if any of the arguments are
+     * null, if the entered chunk is not an ImageExplanationChunk instance or 
+     * if the entered output stream type is not org.json.simple.JSONObject
+     */
     public void buildReportChunk(ExplanationChunk echunk, Object stream, boolean insertHeaders) {
         
         if (echunk == null && stream == null) {
@@ -56,7 +82,15 @@ public class JSONImageChunkBuilder implements ReportChunkBuilder{
         jObject.put("imageExplanation", jsonImageExp);
     }
     
-     private void insertContent(ImageData imageData, JSONObject jObject) {
+    /**
+     * This is a private method that is used to insert content into the JSON object
+     *
+     * @param imageExplanationChunk image explanation chunk which holds the content
+     * that needs to be transformed
+     * @param element element in which the content of the transformed chunk will be
+     * written in as an JSON object attributes(in this case org.json.simple.JSONObject)
+     */
+    private void insertContent(ImageData imageData, JSONObject jObject) {
 
         String url = imageData.getURL();
         String caption = imageData.getCaption();

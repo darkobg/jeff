@@ -12,15 +12,27 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
+ * This class is used to do the utility jobs that are common for JSON report
+ * generation purposes.
  *
  * @author darkostojkovic
  */
 public class JSONChunkUtility {
     
+    /**
+     * Constructor should be private to prevent initialization
+     */
     private JSONChunkUtility(){
     }
     
-    
+    /**
+     * This method inserts the general explanation information (context, rule, group, tags)
+     * into the main JSON report object
+     *
+     * @param echunk explanation chunk that holds the information that needs to be inserted
+     * @param element in which the content of the transformed chunk will be
+     * written in as JSON object attributes 
+     */
     static void insertExplanationInfo(ExplanationChunk echunk, JSONObject jObject) {
 
         int cont = echunk.getContext();
@@ -49,6 +61,20 @@ public class JSONChunkUtility {
         }
     }
     
+    
+    /**
+     *  This is a method that is used to translate the context from an integer
+     * into a String. This method uses reflection in order to do this.
+     *
+     * @param context the int representation of explanation context
+     * @param echunk explanation chunk that holds the string value of the context
+     *
+     * @return the string value of the context
+     *
+     * @throws org.goodoldai.jeff.explanation.ExplanationException
+     * In the case of any problems by covering raised IllegalArgumentException or
+     * IllegalAccessException.
+     */
     static String translateContext(int context, ExplanationChunk echunk) {
 
         Class cl = echunk.getClass();
