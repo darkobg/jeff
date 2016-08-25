@@ -80,6 +80,12 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
         
         JSONObject jObject = (JSONObject) stream;
         
+        JSONArray dataExplanations = (JSONArray) jObject.get("dataExplanation");
+        if(dataExplanations == null)
+        {
+            dataExplanations = new JSONArray();
+        }
+        
         JSONObject jsonDataExp = new JSONObject();
         if(insertHeaders)
             JSONChunkUtility.insertExplanationInfo(echunk, jsonDataExp);
@@ -88,7 +94,9 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
 
         insertContent(dataExplenationChunk, jsonDataExp);
         
-        jObject.put("dataExplanation", jsonDataExp);
+        dataExplanations.add(jsonDataExp);
+        
+        jObject.put("dataExplanation", dataExplanations);
     }
     
     

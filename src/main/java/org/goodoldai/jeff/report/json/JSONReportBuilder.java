@@ -115,11 +115,26 @@ public class JSONReportBuilder extends ReportBuilder {
         String country = explanation.getCountry();
         String title = explanation.getTitle();
         
-        jObject.put("date", date);
-        jObject.put("owner", owner);
-        jObject.put("language", language);
-        jObject.put("country", country);
-        jObject.put("title", title);
+        if(date != null && !date.isEmpty())
+        {
+            jObject.put("date", date);
+        }
+        if(owner != null && !owner.isEmpty())
+        {
+            jObject.put("owner", owner);
+        }
+        if(language != null && !language.isEmpty())
+        {
+            jObject.put("language", language);
+        }
+        if(country != null && !country.isEmpty())
+        {
+            jObject.put("country", country);
+        }
+        if(title != null && !title.isEmpty())
+        {
+            jObject.put("title", title);
+        }
     }
     
 }

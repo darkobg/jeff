@@ -10,6 +10,7 @@ import org.goodoldai.jeff.explanation.ExplanationException;
 import org.goodoldai.jeff.explanation.ImageData;
 import org.goodoldai.jeff.explanation.ImageExplanationChunk;
 import org.goodoldai.jeff.report.ReportChunkBuilder;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -71,6 +72,12 @@ public class JSONImageChunkBuilder implements ReportChunkBuilder{
         
         JSONObject jObject = (JSONObject) stream;
         
+        JSONArray imageExplanations = (JSONArray) jObject.get("imageExplanation");
+        if(imageExplanations == null)
+        {
+            imageExplanations = new JSONArray();
+        }
+        
         JSONObject jsonImageExp = new JSONObject();
         
         if (insertHeaders)
@@ -79,7 +86,9 @@ public class JSONImageChunkBuilder implements ReportChunkBuilder{
         ImageExplanationChunk imageExplanationChunk = (ImageExplanationChunk) echunk;
         insertContent((ImageData) imageExplanationChunk.getContent(), jsonImageExp);
         
-        jObject.put("imageExplanation", jsonImageExp);
+        imageExplanations.add(jsonImageExp);
+        
+        jObject.put("imageExplanation", imageExplanations);
     }
     
     /**

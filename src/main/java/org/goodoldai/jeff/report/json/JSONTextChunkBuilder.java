@@ -9,6 +9,7 @@ import org.goodoldai.jeff.explanation.ExplanationChunk;
 import org.goodoldai.jeff.explanation.ExplanationException;
 import org.goodoldai.jeff.explanation.TextExplanationChunk;
 import org.goodoldai.jeff.report.ReportChunkBuilder;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -66,6 +67,12 @@ public class JSONTextChunkBuilder implements ReportChunkBuilder{
         
         JSONObject jObject = (JSONObject) stream;
         
+        JSONArray textualExplanations = (JSONArray) jObject.get("textualExplanation");
+        if(textualExplanations == null)
+        {
+            textualExplanations = new JSONArray();
+        }
+        
         JSONObject jTextObject = new JSONObject();
         if (insertHeaders)
             JSONChunkUtility.insertExplanationInfo(echunk, jTextObject);
@@ -74,7 +81,11 @@ public class JSONTextChunkBuilder implements ReportChunkBuilder{
 
         insertContent(textExplenationChunk, jTextObject);
         
-        jObject.put("textualExplanation", jTextObject);
+        textualExplanations.add(jTextObject);
+        
+        jObject.put("textualExplanation", textualExplanations);
+
+        
     }
     
     /**

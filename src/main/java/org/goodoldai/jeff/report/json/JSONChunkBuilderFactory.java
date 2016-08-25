@@ -41,7 +41,7 @@ public class JSONChunkBuilderFactory implements ReportChunkBuilderFactory{
     /**
      * Initializes all attributes (chunk builder references) to null.
      */
-    private JSONChunkBuilderFactory(){
+    public JSONChunkBuilderFactory(){
         this.jsonDataChunkBuilder = null;
         this.jsonImageChunkBuilder = null;
         this.jsonTextChunkBuilder = null;
