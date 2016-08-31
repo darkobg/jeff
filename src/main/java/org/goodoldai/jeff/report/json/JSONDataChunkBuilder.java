@@ -75,7 +75,7 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
         }
 
         if (!(stream instanceof JSONObject)) {
-            throw new ExplanationException("The stream must be the type of org.dom4j.Document");
+            throw new ExplanationException("The stream must be the type of org.json.simple.JSONObject");
         }
         
         JSONObject jObject = (JSONObject) stream;
@@ -184,7 +184,9 @@ public class JSONDataChunkBuilder implements ReportChunkBuilder{
         JSONArray valuesArray = new JSONArray();
         for (Iterator<String> it = values.iterator(); it.hasNext();) {
             String value = it.next();
-            valuesArray.add(new JSONObject().put("value", value));
+            JSONObject vObj = new JSONObject();
+            vObj.put("value", value);
+            valuesArray.add(vObj);
         }
         contentObj.put("values", valuesArray);
         contentObj.put("dimensionName", dimensionName);

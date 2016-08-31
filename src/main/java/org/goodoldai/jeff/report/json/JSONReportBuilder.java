@@ -6,12 +6,16 @@
 package org.goodoldai.jeff.report.json;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import org.goodoldai.jeff.explanation.Explanation;
+import org.goodoldai.jeff.explanation.ExplanationChunk;
 import org.goodoldai.jeff.explanation.ExplanationException;
 import org.goodoldai.jeff.report.ReportBuilder;
+import org.goodoldai.jeff.report.ReportChunkBuilder;
 import org.goodoldai.jeff.report.ReportChunkBuilderFactory;
 import org.json.simple.JSONObject;
 
@@ -65,7 +69,18 @@ public class JSONReportBuilder extends ReportBuilder {
             writer = new PrintWriter(new File(filepath));
             jObject = new JSONObject();
             
-            buildReport(explanation, jObject);
+//            insertHeader(explanation, jObject);
+            insertHeader(explanation, jObject);
+
+        ArrayList<ExplanationChunk> chunks = explanation.getChunks();
+
+        for (int i = 0; i < chunks.size(); i++) {
+
+            ExplanationChunk chunk = chunks.get(i);
+            ReportChunkBuilder cbuilder = factory.getReportChunkBuilder(chunk);
+
+            cbuilder.buildReportChunk(chunk, jObject, isInsertChunkHeaders());
+        }
             
             writer.write(jObject.toJSONString());
         } catch (IOException ex) {
@@ -76,6 +91,52 @@ public class JSONReportBuilder extends ReportBuilder {
                 writer.close();
             }
         }
+    }
+    
+    /**
+     * Creates a report based on the provided explanation and writes it to the
+     * provided object that is type of org.dom4j.Document before it is written in
+     * the file 
+     *
+     * @param explanation the explanation that needs to be transformed into a
+     * report
+     * @param stream output stream to which the report is to be written
+     *
+     * @throws org.goodoldai.jeff.explanation.ExplanationException if any of the arguments are null
+     */
+    @Override
+    public void buildReport(Explanation explanation, Object stream) {
+
+        if (explanation == null) {
+            throw new ExplanationException("The entered explanation must not be null");
+        }
+
+        if (stream == null) {
+            throw new ExplanationException("The entered stream must not be null");
+        }
+
+        if (!(stream instanceof PrintWriter)) {
+            throw new ExplanationException("The argument 'stream' must be the type of java.io.PrintWriter");
+        }
+
+        JSONObject jObject = new JSONObject();
+
+        insertHeader(explanation, jObject);
+
+        ArrayList<ExplanationChunk> chunks = explanation.getChunks();
+
+        for (int i = 0; i < chunks.size(); i++) {
+
+            ExplanationChunk chunk = chunks.get(i);
+            ReportChunkBuilder cbuilder = factory.getReportChunkBuilder(chunk);
+
+            cbuilder.buildReportChunk(chunk, jObject, isInsertChunkHeaders());
+        }
+        
+        PrintWriter writer = null;
+        writer = (PrintWriter) stream;
+        writer.write(jObject.toJSONString());
+        writer.close();
     }
 
     /**
@@ -104,7 +165,7 @@ public class JSONReportBuilder extends ReportBuilder {
         }
 
         if (!(stream instanceof JSONObject)) {
-            throw new ExplanationException("The argument 'stream' must be the type of org.dom4j.Document");
+            throw new ExplanationException("The argument 'stream' must be the type of org.json.simple.JSONObject");
         }
 
         JSONObject jObject = (JSONObject) stream;

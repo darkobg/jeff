@@ -404,7 +404,7 @@ public class JEFFWizard {
      *
      * @throws ExplanationException if the explanation has not been created
      */
-    public void generateJSONReport(OutputStream stream, boolean insertHeaders) {
+    public void generateJSONReport(PrintWriter stream, boolean insertHeaders) {
         if (explanation == null) {
             throw new ExplanationException("The the report can not be generated if explanation does not exist");
         }

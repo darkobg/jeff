@@ -55,7 +55,9 @@ public class JSONChunkUtility {
         if (tags != null) {
             JSONArray jArray = new JSONArray();
             for (int i = 0; i < tags.length; i++) {
-                jArray.add(new JSONObject().put("tag", tags[i]));
+                JSONObject tagObject = new JSONObject();
+                tagObject.put("tag", tags[i]);
+                jArray.add(tagObject);
             }
             jObject.put("tags", jArray);
         }
